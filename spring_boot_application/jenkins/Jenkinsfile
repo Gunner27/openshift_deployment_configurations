@@ -1,28 +1,27 @@
+pipeline {
+    agent { label 'maven' }
 
-pipeline{
-  agent { label 'maven' }
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-  stages{
-    stage ('checkout'){
-      steps{
-        checkout scm
-      }
-    }
+        stage('build') {
+            steps {
+                sh "mvn clean package -DskipTests"
+            }
+        }
 
-    stage ('build') {
-      steps{
-      sh "mvn clean package -DskipTests"       
-      }
-    }
-
-    stage ('build image') {
-      steps{
-      sh '''
+        stage('build image') {
+            steps {
+                sh '''
           oc start-build tg-build --from-dir=. --follow
         '''
-      }
+            }
+        }
+
+
     }
-
-
-  }
 }
