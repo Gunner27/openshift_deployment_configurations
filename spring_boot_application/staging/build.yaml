@@ -1,0 +1,26 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: staging-order-build
+  name: staging-order-build
+  namespace: nges-core-framework
+spec:
+  failedBuildsHistoryLimit:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'order-staging:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    type: Binary
+  strategy:
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'openjdk:8-jdk-alpine'
+    type: Docker
+

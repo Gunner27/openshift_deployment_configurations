@@ -1,1 +1,1 @@
-# Openshift Deployment Configuraiton
+# OpenShift Deployment Configuration

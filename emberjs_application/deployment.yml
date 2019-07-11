@@ -1,0 +1,52 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: Frontend
+  name: staging-orderui
+  namespace: nges-core-framework
+spec:
+  replicas: 1
+  selector:
+    app: staging-orderui
+    deploymentconfig: staging-orderui
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: staging-orderui
+        deploymentconfig: staging-orderui
+    spec:
+      containers:
+        - image: docker-registry.default.svc:5000/nges-core-framework/staging-orderui
+          imagePullPolicy: Always
+          name: staging-orderui
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - staging-orderui
+        from:
+          kind: ImageStreamTag
+          name: 'staging-orderui:latest'
+          namespace: nges-core-framework
+      type: ImageChange
+

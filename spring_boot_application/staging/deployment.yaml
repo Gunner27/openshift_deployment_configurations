@@ -1,0 +1,69 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: staging-order
+  name: staging-order
+  namespace: nges-core-framework
+spec:
+  replicas: 1
+  selector:
+    app: staging-order
+    deploymentconfig: staging-order
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: staging-order
+        deploymentconfig: staging-order
+    spec:
+      Containers:
+        - env:
+            - name: MYSQL_DATABASE 
+              value: orderdb
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          image: 'mysql:5.6'
+          imagePullPolicy: IfNotPresent
+          name: mysqlserver
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-data
+        - image: docker-registry.default.svc:5000/nges-core-framework/staging-order
+          imagePullPolicy: Always
+          name: staging-order
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: staging-orderstaging
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - staging-order
+        from:
+          kind: ImageStreamTag
+          name: 'staging-order'
+          namespace: nges-core-framework
+      type: ImageChange
+

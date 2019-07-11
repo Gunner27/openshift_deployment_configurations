@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: staging-order
+  name: staging-order
+  namespace: nges-core-framework
+spec:
+  host: staging-order.nges-core-framework.115.127.24.186.nip.io
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: nges-core-framework
+    weight: 100
+  wildcardPolicy: None
+

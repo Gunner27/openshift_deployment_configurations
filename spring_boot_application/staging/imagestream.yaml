@@ -1,0 +1,8 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    build: staging-order-build
+  name: staging-order-build
+  namespace: nges-core-framework
+
